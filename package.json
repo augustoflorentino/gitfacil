@@ -1,0 +1,25 @@
+{
+  "name": "gitfacil",
+  "version": "1.0.0",
+  "description": "CLI para facilitar operações Git",
+  "main": "dist/index.js",
+  "bin": {
+    "gf": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "link": "npm run build && npm link"
+  },
+  "keywords": ["git", "cli"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "dotenv": "^16.4.1",
+    "simple-git": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
+  }
+}
