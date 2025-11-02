@@ -2,7 +2,7 @@ import simpleGit from 'simple-git';
 import path from 'path';
 import { GITHUB_TOKEN } from '../config';
 
-export async function cloneCommand(urlOrName: string, options: { dir?: string }) {
+export async function cloneCommand(urlOrName: string, options: { dir?: string; latest?: boolean }) {
   const git = simpleGit();
 
   try {
@@ -75,6 +75,34 @@ export async function cloneCommand(urlOrName: string, options: { dir?: string })
     console.log(`Clonando ${repoName || urlOrName}...`);
     await git.clone(cloneUrl, targetDir);
     console.log(`Repositório clonado em: ${targetDir}`);
+
+    if (options.latest) {
+      console.log('\nTrocando para branch mais recente...');
+      const repoGit = simpleGit(targetDir);
+
+      await repoGit.fetch();
+
+      const branches = await repoGit.raw([
+        'for-each-ref',
+        '--sort=-committerdate',
+        '--format=%(refname:short)',
+        'refs/remotes/origin'
+      ]);
+
+      const branchList = branches.split('\n').filter(b => b && !b.includes('HEAD') && b.startsWith('origin/'));
+
+      if (branchList.length > 0) {
+        const latestBranch = branchList[0].replace('origin/', '');
+
+        const localBranches = await repoGit.branchLocal();
+        if (localBranches.all.includes(latestBranch)) {
+          await repoGit.checkout(latestBranch);
+        } else {
+          await repoGit.checkoutBranch(latestBranch, `origin/${latestBranch}`);
+        }
+        console.log(`Trocado para branch '${latestBranch}'`);
+      }
+    }
 
   } catch (error) {
     if (error instanceof Error) {

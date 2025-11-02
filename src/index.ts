@@ -15,6 +15,7 @@ import { initCommand } from './commands/init';
 import { listCommand } from './commands/list';
 import { searchCommand } from './commands/search';
 import { openCommand } from './commands/open';
+import { latestCommand } from './commands/latest';
 
 const program = new Command();
 
@@ -36,6 +37,7 @@ program
   .description('Clonar repositório (URL ou nome)')
   .argument('<url-or-name>', 'URL completa ou nome do repositório')
   .option('-d, --dir <directory>', 'Diretório de destino')
+  .option('-l, --latest', 'Trocar para a branch mais recente após clonar')
   .action(cloneCommand);
 
 program
@@ -115,5 +117,10 @@ program
   .description('Abrir repositório no navegador')
   .argument('<nome>', 'Nome do repositório')
   .action(openCommand);
+
+program
+  .command('latest')
+  .description('Trocar para a branch mais recente')
+  .action(latestCommand);
 
 program.parse();
