@@ -2,11 +2,38 @@ import simpleGit from 'simple-git';
 import path from 'path';
 import { GITHUB_TOKEN } from '../config';
 
-export async function cloneCommand(url: string, options: { dir?: string }) {
+export async function cloneCommand(urlOrName: string, options: { dir?: string }) {
   const git = simpleGit();
 
   try {
-    let cloneUrl = url;
+    let cloneUrl = urlOrName;
+    let repoName = '';
+
+    if (!urlOrName.includes('/') && !urlOrName.includes('github.com')) {
+      console.log(`Buscando repositório "${urlOrName}"...`);
+
+      const response = await fetch('https://api.github.com/user/repos?per_page=100&affiliation=owner', {
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar repositórios');
+      }
+
+      const repos = await response.json();
+      const repo = repos.find((r: any) => r.name.toLowerCase() === urlOrName.toLowerCase());
+
+      if (!repo) {
+        console.error(`Repositório "${urlOrName}" não encontrado`);
+        process.exit(1);
+      }
+
+      cloneUrl = repo.clone_url;
+      repoName = repo.name;
+    }
 
     if (cloneUrl.includes('github.com')) {
       if (cloneUrl.startsWith('https://')) {
@@ -22,12 +49,14 @@ export async function cloneCommand(url: string, options: { dir?: string }) {
 
     if (options.dir) {
       targetDir = options.dir;
+    } else if (repoName) {
+      targetDir = repoName;
     } else {
-      const match = url.match(/\/([^\/]+?)(\.git)?$/);
-      targetDir = match ? match[1] : path.basename(url, '.git');
+      const match = urlOrName.match(/\/([^\/]+?)(\.git)?$/);
+      targetDir = match ? match[1] : path.basename(urlOrName, '.git');
     }
 
-    console.log(`Clonando ${url}...`);
+    console.log(`Clonando ${repoName || urlOrName}...`);
     await git.clone(cloneUrl, targetDir);
     console.log(`Repositório clonado em: ${targetDir}`);
 

@@ -12,6 +12,9 @@ import { undoCommand } from './commands/undo';
 import { amendCommand } from './commands/amend';
 import { configCommand } from './commands/config';
 import { initCommand } from './commands/init';
+import { listCommand } from './commands/list';
+import { searchCommand } from './commands/search';
+import { openCommand } from './commands/open';
 
 const program = new Command();
 
@@ -30,8 +33,8 @@ program
 
 program
   .command('clone')
-  .description('Clonar repositório usando token do GitHub')
-  .argument('<url>', 'URL do repositório')
+  .description('Clonar repositório (URL ou nome)')
+  .argument('<url-or-name>', 'URL completa ou nome do repositório')
   .option('-d, --dir <directory>', 'Diretório de destino')
   .action(cloneCommand);
 
@@ -92,5 +95,25 @@ program
   .argument('<nome>', 'Nome do repositório')
   .option('-p, --private', 'Criar repositório privado')
   .action(initCommand);
+
+program
+  .command('list')
+  .description('Listar seus repositórios')
+  .option('-s, --sort <type>', 'Ordenar por: updated, created, pushed, full_name')
+  .option('-l, --limit <number>', 'Limitar quantidade de resultados')
+  .action(listCommand);
+
+program
+  .command('search')
+  .description('Buscar repositórios')
+  .argument('<termo>', 'Termo de busca')
+  .option('-d, --description', 'Buscar também na descrição')
+  .action(searchCommand);
+
+program
+  .command('open')
+  .description('Abrir repositório no navegador')
+  .argument('<nome>', 'Nome do repositório')
+  .action(openCommand);
 
 program.parse();
