@@ -22,7 +22,7 @@ export async function latestCommand() {
       'refs/remotes/origin'
     ]);
 
-    const branchList = branches.split('\n').filter(b => b && !b.includes('HEAD'));
+    const branchList = branches.split('\n').filter(b => b && !b.includes('HEAD') && b.startsWith('origin/') && b !== 'origin');
 
     if (branchList.length === 0) {
       console.error('Nenhuma branch remota encontrada');
