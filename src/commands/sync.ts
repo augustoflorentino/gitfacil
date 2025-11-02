@@ -24,7 +24,7 @@ export async function syncCommand(options: { branch?: string }) {
     const remote = remotes[0];
     let remoteUrl = remote.refs.fetch;
 
-    if (remoteUrl && remoteUrl.includes('github.com')) {
+    if (remoteUrl && remoteUrl.includes('github.com') && !remoteUrl.includes(GITHUB_TOKEN)) {
       if (remoteUrl.startsWith('https://')) {
         remoteUrl = remoteUrl.replace('https://', `https://${GITHUB_TOKEN}@`);
       } else if (remoteUrl.startsWith('git@')) {

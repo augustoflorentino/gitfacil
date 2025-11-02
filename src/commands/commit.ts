@@ -37,7 +37,7 @@ export async function commitCommand(mensagem: string, options: { all?: boolean }
     const remote = remotes[0];
     let pushUrl = remote.refs.push;
 
-    if (pushUrl && pushUrl.includes('github.com')) {
+    if (pushUrl && pushUrl.includes('github.com') && !pushUrl.includes(GITHUB_TOKEN)) {
       if (pushUrl.startsWith('https://')) {
         pushUrl = pushUrl.replace('https://', `https://${GITHUB_TOKEN}@`);
       } else if (pushUrl.startsWith('git@')) {

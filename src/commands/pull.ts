@@ -24,7 +24,7 @@ export async function pullCommand(options: { branch?: string }) {
     const remote = remotes[0];
     let fetchUrl = remote.refs.fetch;
 
-    if (fetchUrl && fetchUrl.includes('github.com')) {
+    if (fetchUrl && fetchUrl.includes('github.com') && !fetchUrl.includes(GITHUB_TOKEN)) {
       if (fetchUrl.startsWith('https://')) {
         fetchUrl = fetchUrl.replace('https://', `https://${GITHUB_TOKEN}@`);
       } else if (fetchUrl.startsWith('git@')) {
