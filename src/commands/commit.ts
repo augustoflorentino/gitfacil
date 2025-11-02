@@ -1,7 +1,7 @@
 import simpleGit from 'simple-git';
 import { GITHUB_TOKEN } from '../config';
 
-export async function commitCommand(mensagem: string, options: { all?: boolean }) {
+export async function commitCommand(mensagem: string, options: { all?: boolean; branch?: string }) {
   const git = simpleGit();
 
   try {
@@ -10,6 +10,19 @@ export async function commitCommand(mensagem: string, options: { all?: boolean }
     if (!isRepo) {
       console.error('Erro: Não é um repositório Git');
       process.exit(1);
+    }
+
+    if (options.branch) {
+      const branches = await git.branchLocal();
+
+      if (branches.all.includes(options.branch)) {
+        await git.checkout(options.branch);
+        console.log(`Trocado para branch '${options.branch}'`);
+      } else {
+        console.error(`Erro: Branch '${options.branch}' não encontrada`);
+        console.log('Branches disponíveis:', branches.all.join(', '));
+        process.exit(1);
+      }
     }
 
     const status = await git.status();
@@ -32,7 +45,7 @@ export async function commitCommand(mensagem: string, options: { all?: boolean }
     }
 
     const currentBranch = await git.branchLocal();
-    const branch = currentBranch.current;
+    const branch = options.branch || currentBranch.current;
 
     const remote = remotes[0];
     let pushUrl = remote.refs.push;

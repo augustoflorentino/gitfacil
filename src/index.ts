@@ -30,6 +30,7 @@ program
   .description('Add, commit e push em um único comando')
   .argument('<mensagem>', 'Mensagem do commit')
   .option('-a, --all', 'Add all files automaticamente')
+  .option('-b, --branch <branch>', 'Branch específica para commit e push')
   .action(commitCommand);
 
 program
