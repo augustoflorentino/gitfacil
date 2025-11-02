@@ -7,7 +7,7 @@ export async function listCommand(options: { sort?: string; limit?: string }) {
 
     console.log('Buscando repositórios...');
 
-    const response = await fetch(`https://api.github.com/user/repos?sort=${sortBy}&per_page=${perPage}&affiliation=owner`, {
+    const response = await fetch(`https://api.github.com/user/repos?sort=${sortBy}&per_page=${perPage}&affiliation=owner,collaborator,organization_member`, {
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json',

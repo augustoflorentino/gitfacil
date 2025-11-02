@@ -5,18 +5,34 @@ export async function openCommand(nomeRepo: string) {
   try {
     console.log(`Buscando repositório "${nomeRepo}"...`);
 
-    const response = await fetch('https://api.github.com/user/repos?per_page=100&affiliation=owner', {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-      },
-    });
+    let allRepos: any[] = [];
+    let page = 1;
+    const perPage = 100;
 
-    if (!response.ok) {
-      throw new Error('Erro ao buscar repositórios');
+    while (true) {
+      const response = await fetch(`https://api.github.com/user/repos?per_page=${perPage}&page=${page}&affiliation=owner,collaborator,organization_member`, {
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar repositórios');
+      }
+
+      const repos = await response.json();
+
+      if (repos.length === 0) break;
+
+      allRepos = allRepos.concat(repos);
+
+      if (repos.length < perPage) break;
+
+      page++;
     }
 
-    const repos = await response.json();
+    const repos = allRepos;
     const repo = repos.find((r: any) => r.name.toLowerCase() === nomeRepo.toLowerCase());
 
     if (!repo) {
