@@ -27,9 +27,8 @@ export async function initCommand(nome: string, options: { private?: boolean }) 
     }
 
     const repo = await response.json();
-    const remoteUrl = repo.clone_url.replace('https://', `https://${GITHUB_TOKEN}@`);
 
-    await git.addRemote('origin', remoteUrl);
+    await git.addRemote('origin', repo.clone_url);
 
     console.log(`Repositório '${nome}' criado com sucesso`);
     console.log(`URL: ${repo.html_url}`);
