@@ -16,6 +16,7 @@ import { listCommand } from './commands/list';
 import { searchCommand } from './commands/search';
 import { openCommand } from './commands/open';
 import { latestCommand } from './commands/latest';
+import { reposCommand } from './commands/repos';
 
 const program = new Command();
 
@@ -35,8 +36,8 @@ program
 
 program
   .command('clone')
-  .description('Clonar repositório (URL ou nome)')
-  .argument('<url-or-name>', 'URL completa ou nome do repositório')
+  .description('Clonar repositório (URL, nome ou ID)')
+  .argument('<url-or-name-or-id>', 'URL, nome ou ID do repositório')
   .option('-d, --dir <directory>', 'Diretório de destino')
   .option('-l, --latest', 'Trocar para a branch mais recente após clonar')
   .action(cloneCommand);
@@ -123,5 +124,12 @@ program
   .command('latest')
   .description('Trocar para a branch mais recente')
   .action(latestCommand);
+
+program
+  .command('repos')
+  .description('Gerenciar cache de repositórios')
+  .argument('[action-or-term]', 'update, search ou termo inicial')
+  .argument('[term]', 'Termo de busca (se action for search)')
+  .action(reposCommand);
 
 program.parse();

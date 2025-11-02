@@ -1,6 +1,7 @@
 import simpleGit from 'simple-git';
 import path from 'path';
 import { GITHUB_TOKEN } from '../config';
+import { getRepoById } from './repos';
 
 export async function cloneCommand(urlOrName: string, options: { dir?: string; latest?: boolean }) {
   const git = simpleGit();
@@ -9,7 +10,20 @@ export async function cloneCommand(urlOrName: string, options: { dir?: string; l
     let cloneUrl = urlOrName;
     let repoName = '';
 
-    if (!urlOrName.includes('/') && !urlOrName.includes('github.com')) {
+    if (/^\d+$/.test(urlOrName)) {
+      const id = parseInt(urlOrName);
+      const repo = getRepoById(id);
+
+      if (!repo) {
+        console.error(`Repositório ID ${id} não encontrado no cache`);
+        console.log('Execute: gf repos update');
+        process.exit(1);
+      }
+
+      cloneUrl = repo.url.replace('https://github.com/', 'https://github.com/') + '.git';
+      repoName = repo.name;
+      console.log(`Clonando [${id}] ${repo.name}...`);
+    } else if (!urlOrName.includes('/') && !urlOrName.includes('github.com')) {
       console.log(`Buscando repositório "${urlOrName}"...`);
 
       let allRepos: any[] = [];
